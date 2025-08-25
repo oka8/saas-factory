@@ -2,9 +2,15 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '../../lib/auth';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
@@ -47,18 +53,37 @@ export default function Header() {
 
           {/* CTAボタン - ADHD配慮：高コントラスト、大きなタッチターゲット */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              href="/login" 
-              className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              ログイン
-            </Link>
-            <Link 
-              href="/signup" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              無料で始める
-            </Link>
+            {user ? (
+              <>
+                <Link 
+                  href="/dashboard" 
+                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  ダッシュボード
+                </Link>
+                <button 
+                  onClick={handleSignOut}
+                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  ログアウト
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  ログイン
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  無料で始める
+                </Link>
+              </>
+            )}
           </div>
 
           {/* モバイルメニューボタン */}
@@ -101,18 +126,37 @@ export default function Header() {
                 ドキュメント
               </Link>
               <div className="border-t border-gray-200 pt-4 mt-4">
-                <Link 
-                  href="/login" 
-                  className="block text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
-                >
-                  ログイン
-                </Link>
-                <Link 
-                  href="/signup" 
-                  className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 mt-2 mx-4 rounded-lg text-base font-medium text-center shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  無料で始める
-                </Link>
+                {user ? (
+                  <>
+                    <Link 
+                      href="/dashboard" 
+                      className="block text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                    >
+                      ダッシュボード
+                    </Link>
+                    <button 
+                      onClick={handleSignOut}
+                      className="block w-full text-left text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                    >
+                      ログアウト
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link 
+                      href="/login" 
+                      className="block text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                    >
+                      ログイン
+                    </Link>
+                    <Link 
+                      href="/signup" 
+                      className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 mt-2 mx-4 rounded-lg text-base font-medium text-center shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                      無料で始める
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
