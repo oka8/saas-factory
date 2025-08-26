@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # SaaS Factory Next.js Application
+  saas-factory:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saas-factory-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_SITE_NAME=SaaS Factory
+    # Resource limits - CPU usage limited to 10%
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'        # 10% of 1 CPU core
+          memory: 256M        # 256MB memory limit
+        reservations:
+          cpus: '0.05'        # Reserve 5% CPU
+          memory: 128M        # Reserve 128MB memory
+    # Container resource limits for non-swarm mode
+    cpus: 0.10
+    mem_limit: 256m
+    mem_reservation: 128m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - saas-factory-network
+
+  # Local Supabase Database (optional, lightweight setup)
+  supabase-db:
+    image: public.ecr.aws/supabase/postgres:17.4.1.068
+    container_name: saas-factory-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your-super-secret-and-long-postgres-password
+      POSTGRES_PORT: 5432
+    ports:
+      - "54322:5432"
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    # Very lightweight resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'        # 5% of 1 CPU core
+          memory: 128M        # 128MB memory limit
+        reservations:
+          cpus: '0.02'        # Reserve 2% CPU
+          memory: 64M         # Reserve 64MB memory
+    cpus: 0.05
+    mem_limit: 128m
+    mem_reservation: 64m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - saas-factory-network
+    profiles:
+      - with-db  # Only start with --profile with-db
+
+networks:
+  saas-factory-network:
+    driver: bridge
+
+volumes:
+  supabase-db-data:
+    driver: local
+
+# Development override file
+# Create docker-compose.override.yml for development settings

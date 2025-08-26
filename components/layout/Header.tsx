@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useAuth } from '../../lib/auth';
+import { useAuth } from '../../lib/auth-context';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* ロゴ - ADHD配慮：大きく明確 */}
@@ -24,7 +25,7 @@ export default function Header() {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">S</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+            <span className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors">
               SaaS Factory
             </span>
           </Link>
@@ -33,37 +34,50 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               href="/features" 
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               機能
             </Link>
             <Link 
               href="/pricing" 
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               料金
             </Link>
             <Link 
               href="/docs" 
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               ドキュメント
+            </Link>
+            <Link 
+              href="/demo" 
+              className="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            >
+              デモ
             </Link>
           </nav>
 
           {/* CTAボタン - ADHD配慮：高コントラスト、大きなタッチターゲット */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             {user ? (
               <>
                 <Link 
                   href="/dashboard" 
-                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   ダッシュボード
                 </Link>
+                <Link 
+                  href="/profile" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  プロフィール
+                </Link>
                 <button 
                   onClick={handleSignOut}
-                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   ログアウト
                 </button>
@@ -71,13 +85,13 @@ export default function Header() {
             ) : (
               <>
                 <Link 
-                  href="/login" 
-                  className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  href="/auth/login" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   ログイン
                 </Link>
                 <Link 
-                  href="/signup" 
+                  href="/auth/signup" 
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   無料で始める
@@ -89,7 +103,7 @@ export default function Header() {
           {/* モバイルメニューボタン */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             aria-expanded={isMenuOpen}
             aria-label="メインメニューを開く"
           >
@@ -105,38 +119,53 @@ export default function Header() {
 
         {/* モバイルメニュー - ADHD配慮：大きなタッチターゲット、明確な区切り */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4">
             <nav className="flex flex-col space-y-2">
               <Link 
                 href="/features" 
-                className="text-gray-600 hover:text-blue-600 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
               >
                 機能
               </Link>
               <Link 
                 href="/pricing" 
-                className="text-gray-600 hover:text-blue-600 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
               >
                 料金
               </Link>
               <Link 
                 href="/docs" 
-                className="text-gray-600 hover:text-blue-600 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
               >
                 ドキュメント
               </Link>
-              <div className="border-t border-gray-200 pt-4 mt-4">
+              <Link 
+                href="/demo" 
+                className="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
+              >
+                デモ
+              </Link>
+              <div className="flex justify-center py-2">
+                <ThemeToggle />
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                 {user ? (
                   <>
                     <Link 
                       href="/dashboard" 
-                      className="block text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                      className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
                     >
                       ダッシュボード
                     </Link>
+                    <Link 
+                      href="/profile" 
+                      className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
+                    >
+                      プロフィール
+                    </Link>
                     <button 
                       onClick={handleSignOut}
-                      className="block w-full text-left text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                      className="block w-full text-left text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
                     >
                       ログアウト
                     </button>
@@ -144,13 +173,13 @@ export default function Header() {
                 ) : (
                   <>
                     <Link 
-                      href="/login" 
-                      className="block text-gray-600 hover:text-gray-900 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50"
+                      href="/auth/login" 
+                      className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:bg-gray-50 dark:focus:bg-gray-800"
                     >
                       ログイン
                     </Link>
                     <Link 
-                      href="/signup" 
+                      href="/auth/signup" 
                       className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 mt-2 mx-4 rounded-lg text-base font-medium text-center shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                       無料で始める

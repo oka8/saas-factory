@@ -6,12 +6,28 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:reset": "npx supabase db reset",
+    "supabase:types": "npx supabase gen types typescript --local > lib/database.types.ts",
+    "db:migrate": "npx supabase db push",
+    "db:seed": "npx supabase db seed",
+    "docker:dev": "./scripts/docker-dev.sh",
+    "docker:prod": "./scripts/docker-prod.sh",
+    "docker:build": "docker build -t saas-factory:latest .",
+    "docker:stop": "docker-compose down && docker stop saas-factory-prod 2>/dev/null || true"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
+    "@headlessui/react": "^2.2.7",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.56.0",
+    "@types/jszip": "^3.4.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.542.0",
     "next": "15.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -24,6 +40,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
+    "supabase": "^2.39.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

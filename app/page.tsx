@@ -23,7 +23,7 @@ export default function Home() {
           {/* CTA - 高コントラスト、大きなボタン */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Link 
-              href="/signup" 
+              href="/auth/signup" 
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-2 min-w-[200px]"
             >
               無料で始める
@@ -120,7 +120,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">無料</h3>
               <div className="text-3xl font-bold text-gray-900 mb-4">¥0</div>
               <p className="text-sm text-gray-600 mb-4">月1プロジェクト</p>
-              <Link href="/signup" className="block bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium transition-colors">
+              <Link href="/auth/signup" className="block bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium transition-colors">
                 始める
               </Link>
             </div>
@@ -130,7 +130,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">スターター</h3>
               <div className="text-3xl font-bold text-gray-900 mb-4">¥3,000</div>
               <p className="text-sm text-gray-600 mb-4">月5プロジェクト</p>
-              <Link href="/signup" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <Link href="/auth/signup" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 選択
               </Link>
             </div>
@@ -143,7 +143,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">プロ</h3>
               <div className="text-3xl font-bold text-gray-900 mb-4">¥15,000</div>
               <p className="text-sm text-gray-600 mb-4">無制限</p>
-              <Link href="/signup" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <Link href="/auth/signup" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 選択
               </Link>
             </div>
@@ -172,7 +172,7 @@ export default function Home() {
             無料で始めて、最初のプロジェクトを30秒で作成。
           </p>
           <Link 
-            href="/signup" 
+            href="/auth/signup" 
             className="inline-block bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
           >
             無料アカウントを作成
