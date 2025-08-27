@@ -125,54 +125,67 @@ export default function ProjectGenerationModal({ isOpen, onClose, selectedTempla
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.title.trim() || !formData.description.trim() || formData.techStack.length === 0) {
-      showToast('必須フィールドを入力してください', 'error')
+    if (!formData.title.trim() || !formData.description.trim()) {
+      showToast('タイトルと説明を入力してください', 'error')
       return
     }
 
     setIsGenerating(true)
-    setGenerationPhase('プロジェクト要件を分析中...')
+    setGenerationPhase('プロジェクトを作成中...')
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        showToast('ログインが必要です', 'error')
-        return
-      }
-
-      setGenerationPhase('AI生成を実行中...')
+      // タイムアウト設定（10秒）
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
       
-      const response = await fetch('/api/projects/generate', {
+      const projectData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category || 'todo',
+        features: formData.features.join('\n'),
+        design_preferences: formData.techStack.join(', '),
+        tech_requirements: `複雑度: ${formData.complexity}`,
+        status: 'draft'
+      }
+      
+      // プロジェクト作成APIを呼び出し
+      const createResponse = await fetch('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          techStack: formData.techStack,
-          complexity: formData.complexity,
-          category: formData.category,
-          features: formData.features
-        })
+        body: JSON.stringify(projectData),
+        signal: controller.signal
       })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.error || 'プロジェクト生成に失敗しました')
+      
+      clearTimeout(timeoutId)
+      
+      const createResult = await createResponse.json()
+      
+      if (!createResponse.ok || !createResult.success) {
+        throw new Error(createResult.error || 'プロジェクト作成に失敗しました')
       }
+      
+      // 生成完了
+      showToast('プロジェクトが正常に作成されました！', 'success')
+      setIsGenerating(false)
+      
+      // 即座にダッシュボードへリダイレクト
+      onClose()
+      router.push('/dashboard')
+      router.refresh() // Next.js 13+のルーターリフレッシュ
 
-      // プロジェクトIDを設定してSSEで状況を監視
-      setGeneratedProjectId(result.project.id)
-      setGenerationPhase('リアルタイム進捗監視中...')
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Generation error:', error)
-      showToast(
-        error instanceof Error ? error.message : 'プロジェクト生成に失敗しました',
-        'error'
-      )
+      
+      if (error.name === 'AbortError') {
+        showToast('タイムアウトしました。もう一度お試しください。', 'error')
+      } else {
+        showToast(
+          error.message || 'プロジェクト作成に失敗しました',
+          'error'
+        )
+      }
       setIsGenerating(false)
     }
   }

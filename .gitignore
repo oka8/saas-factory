@@ -48,3 +48,4 @@ claudedocs/
 /prisma/dev.db
 /prisma/dev.db-journal
 /prisma/migrations/
+.env*.local

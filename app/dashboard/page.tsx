@@ -10,6 +10,7 @@ import { APIErrorDisplay, NetworkErrorDisplay } from '@/components/ui/ErrorBound
 import ProjectGenerationModal from '@/components/project/ProjectGenerationModal'
 import ProjectTemplateModal from '@/components/project/ProjectTemplateModal'
 import { ProjectTemplate } from '@/lib/templates/project-templates'
+import type { Project } from '@/lib/types'
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth()
@@ -65,9 +66,10 @@ export default function Dashboard() {
       } else {
         throw new Error(result.error || 'プロジェクトの取得に失敗しました')
       }
-    } catch (error: any) {
-      console.error('Failed to fetch projects:', error)
-      setProjectsError(error.message)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.error('Failed to fetch projects:', errorMessage)
+      setProjectsError(errorMessage)
     } finally {
       setIsLoadingProjects(false)
     }
@@ -97,15 +99,16 @@ export default function Dashboard() {
         const allProjects = result.data
         setStats({
           totalProjects: allProjects.length,
-          completedProjects: allProjects.filter((p: any) => p.status === 'completed' || p.status === 'deployed').length,
-          deployedProjects: allProjects.filter((p: any) => p.status === 'deployed').length
+          completedProjects: (allProjects as Project[]).filter(p => p.status === 'completed' || p.status === 'deployed').length,
+          deployedProjects: (allProjects as Project[]).filter(p => p.status === 'deployed').length
         })
       } else {
         throw new Error(result.error || '統計情報の取得に失敗しました')
       }
-    } catch (error: any) {
-      console.error('Failed to fetch stats:', error)
-      setStatsError(error.message)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.error('Failed to fetch stats:', errorMessage)
+      setStatsError(errorMessage)
     } finally {
       setIsLoadingStats(false)
     }

@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
-export default function SignupPage() {
+function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -210,5 +214,13 @@ export default function SignupPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <SignupForm />
+    </Suspense>
   );
 }

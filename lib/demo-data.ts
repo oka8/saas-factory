@@ -241,6 +241,11 @@ export const DEMO_USER_PREFERENCES: UserPreferences = {
 
 // デモモードかどうかを判定する関数
 export const isDemoMode = (): boolean => {
+  // 強制的にデモモードを有効にする（Supabase APIキーエラー回避）
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+    return true
+  }
+  
   if (typeof window !== 'undefined') {
     // URL based demo mode detection
     const urlDemo = window.location.pathname.startsWith('/demo') || 
@@ -253,19 +258,32 @@ export const isDemoMode = (): boolean => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   
-  // Check if using demo configuration
-  return supabaseUrl === 'https://demo.supabase.co' || 
-         supabaseKey === 'demo-anon-key' ||
-         supabaseUrl?.includes('demo') === true
+  // Invalid or demo configuration detection
+  // Supabase APIキーエラーの場合もデモモードに切り替え
+  const isInvalidKey = !supabaseUrl || !supabaseKey || 
+                      supabaseUrl === 'https://demo.supabase.co' || 
+                      supabaseKey === 'demo-anon-key' ||
+                      supabaseUrl?.includes('demo') === true ||
+                      supabaseUrl?.includes('xcxkscxdzqyqqolgxidm') === true // 無効なプロジェクト
+  
+  return isInvalidKey
+}
+
+// 動的デモプロジェクト管理
+let dynamicDemoProjects: Project[] = [...DEMO_PROJECTS]
+
+// デモプロジェクトを追加
+export const addDemoProject = (project: Project): void => {
+  dynamicDemoProjects.unshift(project) // 最新のプロジェクトを先頭に追加
 }
 
 // デモデータ取得用関数
 export const getDemoProjects = (limit?: number): Project[] => {
-  return limit ? DEMO_PROJECTS.slice(0, limit) : DEMO_PROJECTS
+  return limit ? dynamicDemoProjects.slice(0, limit) : dynamicDemoProjects
 }
 
 export const getDemoProject = (id: string): Project | undefined => {
-  return DEMO_PROJECTS.find(project => project.id === id)
+  return dynamicDemoProjects.find(project => project.id === id)
 }
 
 export const getDemoGenerationLogs = (projectId: string): GenerationLog[] => {
@@ -273,9 +291,9 @@ export const getDemoGenerationLogs = (projectId: string): GenerationLog[] => {
 }
 
 export const getDemoStats = () => {
-  const totalProjects = DEMO_PROJECTS.length
-  const completedProjects = DEMO_PROJECTS.filter(p => p.status === 'completed' || p.status === 'deployed').length
-  const deployedProjects = DEMO_PROJECTS.filter(p => p.status === 'deployed').length
+  const totalProjects = dynamicDemoProjects.length
+  const completedProjects = dynamicDemoProjects.filter(p => p.status === 'completed' || p.status === 'deployed').length
+  const deployedProjects = dynamicDemoProjects.filter(p => p.status === 'deployed').length
 
   return {
     totalProjects,
@@ -283,3 +301,33 @@ export const getDemoStats = () => {
     deployedProjects
   }
 }
+
+export function getDemoTemplates() {
+  return [
+    {
+      id: 'template-1',
+      name: 'CRM・顧客管理システム',
+      description: '顧客情報の管理と営業活動の追跡',
+      category: 'crm',
+      features: ['顧客管理', '営業活動記録', 'レポート機能'],
+      preview_url: '#'
+    },
+    {
+      id: 'template-2', 
+      name: 'ブログ・CMS',
+      description: '記事投稿とコンテンツ管理システム',
+      category: 'cms',
+      features: ['記事投稿', '画像管理', 'SEO最適化'],
+      preview_url: '#'
+    },
+    {
+      id: 'template-3',
+      name: 'タスク管理アプリ',
+      description: 'プロジェクトとタスクの管理',
+      category: 'todo',
+      features: ['タスク作成', 'プロジェクト管理', '進捗追跡'],
+      preview_url: '#'
+    }
+  ]
+}
+

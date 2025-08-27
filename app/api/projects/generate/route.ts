@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { projectGeneratorDB } from '@/lib/database'
-// import { generateProjectCode } from '@/lib/claude-client' - unused in demo mode
-// import type { CreateProjectData } from '@/lib/types' - using inline type
+import { generateProjectCode } from '@/lib/claude-client'
+import type { CreateProjectData } from '@/lib/types'
 import { isDemoMode as checkDemoMode } from '@/lib/demo-data'
 
 export async function POST(request: NextRequest) {
@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // デモモードチェック
+    // AI生成モードの判定
+    const hasApiKey = !!process.env.ANTHROPIC_API_KEY
     const isDemoMode = checkDemoMode() || project_id.startsWith('demo-project-')
 
     if (isDemoMode) {
@@ -66,8 +67,13 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+      // タイムアウト設定（3分）
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Generation timeout after 3 minutes')), 180000)
+      })
+      
       // 新しい統合されたプロジェクト生成を使用
-      const result = await projectGeneratorDB.generateProject(
+      const generationPromise = projectGeneratorDB.generateProject(
         project_data,
         user.id,
         (step: string, progress: number, status: string) => {
@@ -75,6 +81,8 @@ export async function POST(request: NextRequest) {
           console.log(`Generation progress: ${step} - ${progress}% (${status})`)
         }
       )
+      
+      const result = await Promise.race([generationPromise, timeoutPromise])
 
       if (result.success) {
         return NextResponse.json({

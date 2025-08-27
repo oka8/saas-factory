@@ -12,7 +12,7 @@ export interface Database {
           design_preferences: string | null
           tech_requirements: string | null
           status: 'draft' | 'generating' | 'completed' | 'error' | 'deployed'
-          generated_code: any | null
+          generated_code: Record<string, unknown> | null
           deployment_url: string | null
           repository_url: string | null
           created_at: string
@@ -30,7 +30,7 @@ export interface Database {
           design_preferences?: string | null
           tech_requirements?: string | null
           status?: 'draft' | 'generating' | 'completed' | 'error' | 'deployed'
-          generated_code?: any | null
+          generated_code?: Record<string, unknown> | null
           deployment_url?: string | null
           repository_url?: string | null
           created_at?: string
@@ -48,7 +48,7 @@ export interface Database {
           design_preferences?: string | null
           tech_requirements?: string | null
           status?: 'draft' | 'generating' | 'completed' | 'error' | 'deployed'
-          generated_code?: any | null
+          generated_code?: Record<string, unknown> | null
           deployment_url?: string | null
           repository_url?: string | null
           created_at?: string
@@ -64,7 +64,7 @@ export interface Database {
           step: string
           status: 'pending' | 'processing' | 'completed' | 'error'
           message: string | null
-          details: any | null
+          details: Record<string, unknown> | null
           started_at: string
           completed_at: string | null
           error_message: string | null
@@ -75,7 +75,7 @@ export interface Database {
           step: string
           status: 'pending' | 'processing' | 'completed' | 'error'
           message?: string | null
-          details?: any | null
+          details?: Record<string, unknown> | null
           started_at?: string
           completed_at?: string | null
           error_message?: string | null
@@ -86,7 +86,7 @@ export interface Database {
           step?: string
           status?: 'pending' | 'processing' | 'completed' | 'error'
           message?: string | null
-          details?: any | null
+          details?: Record<string, unknown> | null
           started_at?: string
           completed_at?: string | null
           error_message?: string | null
@@ -96,30 +96,30 @@ export interface Database {
         Row: {
           id: string
           user_id: string
-          preferred_tech_stack: any
+          preferred_tech_stack: Record<string, unknown>
           default_deployment_platform: string
-          adhd_settings: any
-          notification_preferences: any
+          adhd_settings: Record<string, unknown>
+          notification_preferences: Record<string, unknown>
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          preferred_tech_stack?: any
+          preferred_tech_stack?: Record<string, unknown>
           default_deployment_platform?: string
-          adhd_settings?: any
-          notification_preferences?: any
+          adhd_settings?: Record<string, unknown>
+          notification_preferences?: Record<string, unknown>
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          preferred_tech_stack?: any
+          preferred_tech_stack?: Record<string, unknown>
           default_deployment_platform?: string
-          adhd_settings?: any
-          notification_preferences?: any
+          adhd_settings?: Record<string, unknown>
+          notification_preferences?: Record<string, unknown>
           created_at?: string
           updated_at?: string
         }
@@ -165,8 +165,8 @@ export interface Database {
           name: string
           category: string
           description: string
-          template_config: any
-          code_template: any
+          template_config: Record<string, unknown>
+          code_template: Record<string, unknown>
           is_active: boolean
           created_by: string | null
           created_at: string
@@ -177,8 +177,8 @@ export interface Database {
           name: string
           category: string
           description: string
-          template_config: any
-          code_template: any
+          template_config: Record<string, unknown>
+          code_template: Record<string, unknown>
           is_active?: boolean
           created_by?: string | null
           created_at?: string
@@ -189,8 +189,8 @@ export interface Database {
           name?: string
           category?: string
           description?: string
-          template_config?: any
-          code_template?: any
+          template_config?: Record<string, unknown>
+          code_template?: Record<string, unknown>
           is_active?: boolean
           created_by?: string | null
           created_at?: string
@@ -239,8 +239,8 @@ export interface GeneratedCode {
   pages: string[]
   api_routes: string[]
   database_schema: string
-  package_json: any
-  deployment_config: any
+  package_json: Record<string, unknown>
+  deployment_config: Record<string, unknown>
   file_structure: FileStructure[]
 }
 
@@ -257,7 +257,7 @@ export interface GenerationLog {
   step: GenerationStep
   status: GenerationStatus
   message?: string
-  details?: any
+  details?: Record<string, unknown>
   started_at: string
   completed_at?: string
   error_message?: string

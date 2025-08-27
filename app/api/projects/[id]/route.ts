@@ -1,11 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { isDemoMode, getDemoProject, getDemoGenerationLogs, DEMO_USER } from '@/lib/demo-data'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
+    const projectId = resolvedParams.id
+    
+    // デモモードチェック（通常はSupabaseを使用）
+    const isDemoModeActive = isDemoMode()
+
+    if (isDemoModeActive) {
+      // デモモード：デモデータを返す
+      const demoProject = getDemoProject(projectId)
+      
+      if (!demoProject) {
+        return NextResponse.json(
+          { success: false, error: 'プロジェクトが見つかりません' },
+          { status: 404 }
+        )
+      }
+
+      const demoLogs = getDemoGenerationLogs(projectId)
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          project: demoProject,
+          generation_logs: demoLogs
+        },
+        message: 'デモモード: プロジェクトを取得しました'
+      })
+    }
+
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -15,9 +45,6 @@ export async function GET(
         { status: 401 }
       )
     }
-
-    const resolvedParams = await params
-    const projectId = resolvedParams.id
 
     // プロジェクトを取得
     const { data: project, error: projectError } = await supabase
@@ -67,6 +94,30 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const projectId = params.id
+    const body = await request.json()
+    
+    // デモモードチェック（通常はSupabaseを使用）
+    const isDemoModeActive = isDemoMode()
+
+    if (isDemoModeActive) {
+      // デモモード：ダミー更新結果を返す
+      const demoProject = getDemoProject(projectId)
+      
+      if (!demoProject) {
+        return NextResponse.json(
+          { success: false, error: 'プロジェクトが見つかりません' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: { ...demoProject, ...body, updated_at: new Date().toISOString() },
+        message: 'デモモード: プロジェクトが更新されました'
+      })
+    }
+
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -76,9 +127,6 @@ export async function PUT(
         { status: 401 }
       )
     }
-
-    const projectId = params.id
-    const body = await request.json()
 
     // プロジェクトを更新
     const { data: project, error } = await supabase
@@ -118,6 +166,28 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const projectId = params.id
+    
+    // デモモードチェック（通常はSupabaseを使用）
+    const isDemoModeActive = isDemoMode()
+
+    if (isDemoModeActive) {
+      // デモモード：成功レスポンスを返す
+      const demoProject = getDemoProject(projectId)
+      
+      if (!demoProject) {
+        return NextResponse.json(
+          { success: false, error: 'プロジェクトが見つかりません' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'デモモード: プロジェクトが削除されました'
+      })
+    }
+
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -127,8 +197,6 @@ export async function DELETE(
         { status: 401 }
       )
     }
-
-    const projectId = params.id
 
     // プロジェクトを削除
     const { error } = await supabase

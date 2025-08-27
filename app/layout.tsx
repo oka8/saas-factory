@@ -6,6 +6,9 @@ import Footer from "../components/layout/Footer";
 import { AuthProvider } from "../lib/auth-context";
 import { ThemeProvider } from "../lib/contexts/ThemeContext";
 
+// Force dynamic rendering for all pages
+export const dynamic = 'force-dynamic'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

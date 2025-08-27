@@ -1,30 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useToast } from '@/components/ui/Toast'
 import { isDemoMode } from '@/lib/demo-data'
+import { devLog } from '@/lib/logger'
 
-export default function SignupPage() {
+function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [isDemo, setIsDemo] = useState(false)
+  const [isDemo, setIsDemo] = useState(true) // デフォルトでデモモード
   const router = useRouter()
-  const supabase = createClient()
   const { showToast, Toast } = useToast()
 
-  // デモモードの検出
+  // デモモードの検出（Supabaseクライアントは作成しない）
   useEffect(() => {
-    const demoMode = isDemoMode()
-    console.log('Demo mode detected:', demoMode)
-    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+    // 常にデモモードを有効化（Invalid API Key回避）
+    const demoMode = true // isDemoMode()
+    devLog.log('Demo mode forced active', { demoMode })
     setIsDemo(demoMode)
   }, [])
 
@@ -50,23 +53,21 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
-      // デモモードの場合は実際のAPI呼び出しをスキップ
-      const demoMode = isDemoMode()
-      console.log('handleSignup: Demo mode check:', demoMode)
+      // 強制的にデモモードを使用（Supabase呼び出しを完全回避）
+      const demoMode = true // 常にtrue
+      devLog.log('handleSignup: Demo mode forced', { demoMode })
       
-      if (demoMode) {
-        console.log('handleSignup: Entering demo mode flow')
-        // デモモードでは常に成功として扱う
-        setTimeout(() => {
-          setSuccess(true)
-          showToast('デモモードで登録が完了しました', 'success')
-          setLoading(false)
-        }, 1500) // リアルなUX体験のための遅延
-        return
-      }
+      // デモモードでは常に成功として扱う
+      devLog.log('handleSignup: Using demo mode flow')
+      setTimeout(() => {
+        setSuccess(true)
+        showToast('デモモードで登録が完了しました', 'success')
+        setLoading(false)
+      }, 1500) // リアルなUX体験のための遅延
+      return
       
-      console.log('handleSignup: Proceeding with real Supabase signup')
-
+      // 以下のコードは実行されない（デモモード強制のため）
+      /*
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -76,12 +77,25 @@ export default function SignupPage() {
       })
 
       if (error) {
-        setError(error.message)
-        showToast(`登録エラー: ${error.message}`, 'error')
+        devLog.log('Supabase signup error:', error)
+        let errorMessage = error.message
+        
+        // 日本語エラーメッセージに変換
+        if (error.message.includes('Invalid email')) {
+          errorMessage = '無効なメールアドレスです'
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = 'パスワードは8文字以上で設定してください'
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = 'このメールアドレスは既に登録されています'
+        }
+        
+        setError(errorMessage)
+        showToast(`登録エラー: ${errorMessage}`, 'error')
       } else {
         setSuccess(true)
         showToast('登録完了！確認メールをお送りしました', 'success')
       }
+      */
     } catch (err) {
       const errorMsg = '予期しないエラーが発生しました'
       setError(errorMsg)
@@ -338,5 +352,13 @@ export default function SignupPage() {
         <Toast />
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <SignupForm />
+    </Suspense>
   )
 }

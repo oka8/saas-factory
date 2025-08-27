@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useToast } from '@/components/ui/Toast'
 
-export default function UpdatePasswordPage() {
+function UpdatePasswordForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -219,5 +221,13 @@ export default function UpdatePasswordPage() {
         <Toast />
       </div>
     </div>
+  )
+}
+
+export default function UpdatePasswordPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <UpdatePasswordForm />
+    </Suspense>
   )
 }

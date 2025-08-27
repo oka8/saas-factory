@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -31,11 +32,11 @@ export async function GET(request: NextRequest) {
       if (!error) {
         return NextResponse.redirect(`${origin}${next}`)
       } else {
-        console.error('Auth callback error:', error)
+        logger.error('Auth callback error', { error: error.message })
         return NextResponse.redirect(`${origin}/auth/login?error=認証エラーが発生しました`)
       }
     } catch (err) {
-      console.error('Auth callback exception:', err)
+      logger.error('Auth callback exception', { error: err instanceof Error ? err.message : String(err) })
       return NextResponse.redirect(`${origin}/auth/login?error=認証処理中にエラーが発生しました`)
     }
   }

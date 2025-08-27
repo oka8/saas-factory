@@ -8,7 +8,7 @@ import type { Project, GenerationLog } from '@/lib/types'
 import { isDemoMode, getDemoProject, getDemoGenerationLogs } from '@/lib/demo-data'
 import ShareModal from '@/components/project/ShareModal'
 import ProjectHistory from '@/components/project/ProjectHistory'
-import DeploymentModal from '@/components/project/DeploymentModal'
+import { DeploymentModal } from '@/components/project/DeploymentModal'
 import CollaborationPanel from '@/components/project/CollaborationPanel'
 import { createClient } from '@/lib/supabase/client'
 

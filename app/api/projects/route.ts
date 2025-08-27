@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { projectsDB, ServerDB } from '@/lib/database'
 import type { CreateProjectData } from '@/lib/types'
-import { getDemoProjects, DEMO_USER } from '@/lib/demo-data'
+import { getDemoProjects, DEMO_USER, addDemoProject } from '@/lib/demo-data'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     
-    // デモモードチェック
-    const isDemoMode = searchParams.get('demo') === 'true' || 
+    // デモモードチェック（通常はSupabaseを使用）
+    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || 
+                      searchParams.get('demo') === 'true' || 
                       request.headers.get('referer')?.includes('demo=true') ||
                       request.headers.get('referer')?.includes('/demo')
 
@@ -80,22 +81,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // デモモードチェック
-    const isDemoMode = request.headers.get('referer')?.includes('demo=true') ||
+    // デモモードチェック（通常はSupabaseを使用）
+    const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || 
+                      request.headers.get('referer')?.includes('demo=true') ||
                       request.headers.get('referer')?.includes('/demo') ||
                       body.demo === true
 
     if (isDemoMode) {
-      // デモモード：ダミープロジェクトを返す
+      // デモモード：ダミープロジェクトを作成してリストに追加
       const demoProject = {
         id: `demo-project-${Date.now()}`,
         user_id: DEMO_USER.id,
         title: body.title,
         description: body.description,
-        category: body.category,
-        features: body.features,
-        design_preferences: body.design_preferences,
-        tech_requirements: body.tech_requirements,
+        category: body.category || 'other',
+        features: body.features || '',
+        design_preferences: body.design_preferences || '',
+        tech_requirements: body.tech_requirements || '',
         status: 'draft',
         generated_code: null,
         deployment_url: null,
@@ -105,6 +107,9 @@ export async function POST(request: NextRequest) {
         completed_at: null,
         deployed_at: null
       }
+
+      // 動的リストに追加
+      addDemoProject(demoProject)
 
       return NextResponse.json({
         success: true,
