@@ -263,8 +263,7 @@ export const isDemoMode = (): boolean => {
   const isInvalidKey = !supabaseUrl || !supabaseKey || 
                       supabaseUrl === 'https://demo.supabase.co' || 
                       supabaseKey === 'demo-anon-key' ||
-                      supabaseUrl?.includes('demo') === true ||
-                      supabaseUrl?.includes('xcxkscxdzqyqqolgxidm') === true // 無効なプロジェクト
+                      supabaseUrl?.includes('demo') === true
   
   return isInvalidKey
 }
