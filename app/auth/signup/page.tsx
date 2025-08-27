@@ -25,9 +25,8 @@ function SignupForm() {
 
   // デモモードの検出（Supabaseクライアントは作成しない）
   useEffect(() => {
-    // 常にデモモードを有効化（Invalid API Key回避）
-    const demoMode = true // isDemoMode()
-    devLog.log('Demo mode forced active', { demoMode })
+    const demoMode = isDemoMode()
+    devLog.log('Demo mode detection', { demoMode })
     setIsDemo(demoMode)
   }, [])
 
@@ -53,21 +52,19 @@ function SignupForm() {
     setLoading(true)
 
     try {
-      // 強制的にデモモードを使用（Supabase呼び出しを完全回避）
-      const demoMode = true // 常にtrue
-      devLog.log('handleSignup: Demo mode forced', { demoMode })
-      
-      // デモモードでは常に成功として扱う
-      devLog.log('handleSignup: Using demo mode flow')
-      setTimeout(() => {
-        setSuccess(true)
-        showToast('デモモードで登録が完了しました', 'success')
-        setLoading(false)
-      }, 1500) // リアルなUX体験のための遅延
-      return
-      
-      // 以下のコードは実行されない（デモモード強制のため）
-      /*
+      if (isDemoMode()) {
+        // デモモードでは成功として扱う
+        devLog.log('handleSignup: Using demo mode flow')
+        setTimeout(() => {
+          setSuccess(true)
+          showToast('デモモードで登録が完了しました', 'success')
+          setLoading(false)
+        }, 1500) // リアルなUX体験のための遅延
+        return
+      }
+
+      // 実際のSupabase認証
+      const supabase = createClient()
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -95,7 +92,6 @@ function SignupForm() {
         setSuccess(true)
         showToast('登録完了！確認メールをお送りしました', 'success')
       }
-      */
     } catch (err) {
       const errorMsg = '予期しないエラーが発生しました'
       setError(errorMsg)

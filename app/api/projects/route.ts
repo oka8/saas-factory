@@ -129,8 +129,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // demo フィールドを除外してプロジェクトデータを作成
+    const { demo, ...cleanBody } = body
     const projectData: CreateProjectData = {
-      ...body,
+      ...cleanBody,
       user_id: user.id
     }
 

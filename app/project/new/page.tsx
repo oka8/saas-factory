@@ -27,24 +27,6 @@ export default function NewProject() {
   const [showGenerationModal, setShowGenerationModal] = useState(false)
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <LoadingSpinner size="lg" text="認証情報を確認中..." />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return null
-  }
-
   const handleInputChange = (field: string, value: string) => {
     setProjectData(prev => ({
       ...prev,
@@ -136,6 +118,26 @@ export default function NewProject() {
       return () => clearTimeout(timer)
     }
   }, [generationHook.isGenerating, generationHook.error, generationHook.progress, currentProjectId, router])
+
+  // Authentication effect
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login')
+    }
+  }, [user, loading, router])
+
+  // Early returns after all hooks are defined
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <LoadingSpinner size="lg" text="認証情報を確認中..." />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
 
   const categories = [
     { id: 'crm', name: 'CRM・顧客管理', description: '顧客情報、営業管理' },
